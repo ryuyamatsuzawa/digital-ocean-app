@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:ryuya1028@localhost/blogRMData"
+}
+
+model Post {
+  authorId  Int?
+  content   String?
+  id        Int     @id @default(autoincrement())
+  published Boolean @default(false)
+  title     String
+  author    User?   @relation(fields: [authorId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
+  TagsOnPosts      TagsOnPosts[]
+}
+
+model User {
+  email String  @unique
+  id    Int     @id @default(autoincrement())
+  name  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
+  posts Post[]
+  password String 
+  salt String
+}
+
+model Tag {
+  id     Int     @id @default(autoincrement())
+  name   String
+  TagsOnPosts  TagsOnPosts[]
+}
+
+model TagsOnPosts {
+  post        Post @relation(fields: [postId], references: [id])
+  postId      Int
+  tag         Tag  @relation(fields: [tagId], references: [id])
+  tagId       Int
+  
+  @@id([postId, tagId])
+}
